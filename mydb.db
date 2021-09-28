@@ -1,11 +1,1 @@
-fingers = [
-    {'id': 0,
-     'direction': 'Forward',
-     'number': 'one'},
-    {'id': 1,
-     'direction': 'Backward',
-     'number': 'two'},
-    {'id': 2,
-     'direction': 'Right',
-     'number': 'three'}
-]
+
