@@ -1,13 +1,10 @@
 from flask import Flask, request, jsonify, make_response
-import json
 from numpy.lib.type_check import imag
-import requests
-import re
 import cv2
 import mediapipe as mp
 import base64
 import numpy as np
-import sqlite3
+
 
 app = Flask(__name__)
 app.config["DEBUG"] = False
@@ -16,20 +13,6 @@ cap = cv2.VideoCapture(0)
 cap.set(3, wCam)
 cap.set(4, hCam)
 
-fingers = [
-    {'id': 0,
-     'direction': 'Forward',
-     'number': 'one'},
-    {'id': 1,
-     'direction': 'Backward',
-     'number': 'two'},
-    {'id': 2,
-     'direction': 'Right',
-     'number': 'three'}
-]
-
-
-#HAND DETECTION
 class handGesture():
     #Ititializes a Mediapipe hand object
     def __init__(self, static_image_mode=False, max_num_hands=2, min_detection_con=0.5, min_tracking_con=0.5):
@@ -64,12 +47,10 @@ class handGesture():
                 lmsList.append([id, cx, cy])
 
         return lmsList
-#FINGER COUNTER
+
 tipIds = [4, 8, 12, 16, 20]
 detection = handGesture(min_detection_con=0.75)
 
-#def get_fingers(image):
-    # bu senin görüntüden parmak sayan algoritman
 def get_fingers(img):
 
     while True:
@@ -109,9 +90,6 @@ def get_fingers(img):
                         fingers.append(0)
                 fingerNum = fingers.count(1)
         
-            #sending data to Arduino
-           
-
 
             cv2.putText(img, str(fingerNum), (45, 375), cv2.FONT_HERSHEY_PLAIN,
                         8, (0, 0, 0), 5)
@@ -141,17 +119,11 @@ def get_fingers(img):
         cv2.waitKey(1)
 
 
-
 def b64_to_img(img):
     encoded_string = base64.b64encode(img)
     decoded_string = base64.b64decode(encoded_string)
     base64_img = np.fromstring(decoded_string, dtype=np.uint8)
     base64_img = base64_img.reshape(img.shape)
-
-@app.route('/api/fingers/all', methods=['GET', 'POST'])
-def api_all():
-    return jsonify(fingers)
-
 
 @app.route('/api/fingercounter', methods=['GET'])
 def trace():
@@ -168,8 +140,6 @@ def trace():
         resp = jsonify(message=str(ex.args[0]), finger_count=-1)
         return make_response(resp, 500)
 
-
-
 if __name__ == '__main__':
     app.run()
-    #get_fingers()
+    
